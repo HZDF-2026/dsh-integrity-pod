@@ -1,0 +1,24 @@
+{
+  "name": "dsh-integrity-adjudicate",
+  "version": "0.1.0",
+  "description": "DeepSeek Harness plugin: adjudicate a measured result against a pre-registered decision boundary, flagging post-hoc boundaries and tampered pre-registration chains (research integrity pillar 4, adjudication experiments).",
+  "type": "module",
+  "main": "index.js",
+  "files": ["index.js", "cordis.patch.yml", "README.md"],
+  "engines": { "node": ">=22" },
+  "keywords": ["deepseek", "deepseek-harness", "dsh", "cordis", "plugin", "research-integrity", "adjudication"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HZDF-2026/dsh-integrity-pod.git",
+    "directory": "plugins/dsh-integrity-adjudicate"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-tools": "0.1.1-rc.2"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

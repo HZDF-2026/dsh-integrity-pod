@@ -1,0 +1,14 @@
+{
+  "name": "dsh-integrity-pod",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "DeepSeek Harness 科研诚信与安全插件套件（research-integrity & security plugins for DeepSeek Harness）",
+  "scripts": {
+    "test": "node --test \"tests/*.test.js\"",
+    "verify": "node scripts/verify-packages.mjs"
+  },
+  "devDependencies": {
+    "@deepseek-ai/dsh-tools": "0.1.1-rc.2"
+  }
+}

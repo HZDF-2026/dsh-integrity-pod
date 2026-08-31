@@ -1,0 +1,11 @@
+- insert:
+    - id: integrity-guardrail
+      name: dsh-integrity-guardrail
+      # config:
+      #   mode: enforce            # enforce | audit
+      #   extraDenyPatterns: []    # regex source strings, appended to defaults
+      #   allowPatterns: []        # regex source strings, escape hatch (checked first)
+      #   protectIntegrityStores: true
+      #   integrityStoreDir: .integrity
+      #   auditLog: true
+      #   auditPath: .integrity/tool-audit.jsonl

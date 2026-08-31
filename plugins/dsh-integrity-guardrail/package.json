@@ -1,0 +1,24 @@
+{
+  "name": "dsh-integrity-guardrail",
+  "version": "0.1.0",
+  "description": "DeepSeek Harness plugin: security guardrail and audit loop. Denies high-risk tool calls (destructive shell, pipe-to-shell, credential reads, force-push to main, integrity-store tampering) and writes a hash-chained append-only audit trail of tool outcomes.",
+  "type": "module",
+  "main": "index.js",
+  "files": ["index.js", "cordis.patch.yml", "README.md"],
+  "engines": { "node": ">=22" },
+  "keywords": ["deepseek", "deepseek-harness", "dsh", "cordis", "plugin", "security", "guardrail", "audit", "permissions"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HZDF-2026/dsh-integrity-pod.git",
+    "directory": "plugins/dsh-integrity-guardrail"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-tools": "0.1.1-rc.2"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "dsh-integrity-provenance",
+  "version": "0.1.0",
+  "description": "DeepSeek Harness plugin: hash-chained provenance records binding artifacts to inputs, pipeline and git commit, with regeneration verification (research integrity pillar 2, pipeline provenance).",
+  "type": "module",
+  "main": "index.js",
+  "files": ["index.js", "cordis.patch.yml", "README.md"],
+  "engines": { "node": ">=22" },
+  "keywords": ["deepseek", "deepseek-harness", "dsh", "cordis", "plugin", "research-integrity", "provenance"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HZDF-2026/dsh-integrity-pod.git",
+    "directory": "plugins/dsh-integrity-provenance"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-tools": "0.1.1-rc.2"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
