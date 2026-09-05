@@ -4,6 +4,7 @@
 #define dship_BITWIN_H
 
 #include <string>
+#include <stdexcept>
 
 namespace dship {
 
