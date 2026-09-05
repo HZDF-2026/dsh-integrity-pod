@@ -5,6 +5,9 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     strategy:
@@ -23,3 +26,56 @@ jobs:
         run: npm run verify
       - name: Behavior tests
         run: npm test
+
+  cpp:
+    name: C++ on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install MinGW
+        if: runner.os == 'Windows'
+        run: choco install -y mingw
+      - name: Build + golden-table tests
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            mingw32-make -C cpp test
+          else
+            make -C cpp test
+          fi
+
+  diff:
+    name: Differential (C++ vs Node) on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        run: npm install
+      - name: Install MinGW
+        if: runner.os == 'Windows'
+        run: choco install -y mingw
+      - name: Build C++ binary
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            mingw32-make -C cpp
+          else
+            make -C cpp
+          fi
+      - name: Golden table is up to date with the Node reference
+        run: |
+          node tests/cpp/gen_golden.mjs
+          git diff --exit-code tests/cpp/golden.json
+      - name: Differential harness (C++ vs Node)
+        run: node tests/cpp/diff_cpp.mjs

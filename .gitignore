@@ -2,3 +2,5 @@ node_modules/
 *.log
 .integrity/
 tmp/
+dist/
+cpp/build/

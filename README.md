@@ -68,17 +68,42 @@ npx @deepseek-ai/dsh@0.1.1-rc.2 --profile web --dump-config
 npm install
 npm run verify   # 80 项包结构检查（五插件元数据一致性）
 npm test         # 39 个行为测试（真实 defineTool + 模拟 Cordis ctx）
+
+# C++17 移植（可选，需 g++ ≥ 9 / mingw-w64）
+make -C cpp all          # 构建 dist/cpp/dship-integrity(.exe)
+make -C cpp test         # 88 项黄金表测试（位精确：哈希链、正则、JSON、数字格式化）
+node tests/cpp/diff_cpp.mjs   # 4 个差异测试场景（C++ CLI vs Node 插件参考实现）
 ```
 
 验收标准先于测试写定于 [PREREGISTRATION.md](PREREGISTRATION.md)（A1–A7），裁决记录见 [AUDIT_LOG.md](AUDIT_LOG.md)。
+
+## C++17 移植
+
+`cpp/` 是五个插件核心的 C++17 位精确移植（与 [poc-evidence](https://github.com/HZDF-2026/poc-evidence) 的移植策略一致），编译为单文件 CLI `dist/cpp/dship-integrity`，零依赖、零外部库：
+
+```
+dship-integrity prereg register --claim "方法A>0.05" --boundary 0.05 --direction above
+dship-integrity adjudicate --measured 0.073 --prereg-id PR-001
+dship-integrity bitwin run --command "node bench.js"
+dship-integrity guardrail check --tool bash --args-json '{"command":"rm -rf /"}'
+```
+
+移植要点：
+
+- **基础层**：SHA-256（FIPS 180-4）、V8 语义 `JSON.stringify`/`parse`、ECMAScript 正则引擎（jsre，含 case folding）、Node `path.resolve`/`spawn(shell:true)`（Windows `cmd /d /s /c`）语义复刻；
+- **位精确策略**：黄金表（`tests/cpp/golden.json`，由 Node 参考实现生成）冻结哈希链、判读数值、错误消息的精确字节；差异测试（`tests/cpp/diff_cpp.mjs`）在孪生临时目录跑同一操作序列，归一化时间戳/时长后逐字节比对输出与产物文件；
+- **每个 CLI 调用即一个新会话**：guardrail 审计统计从磁盘读取（与 Node 插件的进程内计数器在等价操作序列下一致）。
 
 ## 仓库布局
 
 ```
 plugins/          五个插件包（package.json + cordis.patch.yml + index.js + README）
-skills/           research-integrity 会话工作法 skill
-tests/            node:test 行为测试 + 模拟 Cordis harness
-scripts/          verify-packages.mjs 包结构自检
+skills/          research-integrity 会话工作法 skill
+cpp/             C++17 位精确移植（Makefile + 模块源码 + 黄金表测试）
+dist/cpp/        C++ CLI 构建产物（make -C cpp all）
+tests/           node:test 行为测试 + 模拟 Cordis harness
+tests/cpp/        黄金表生成器/数据 + 差异测试（vs Node 插件参考实现）
+scripts/         verify-packages.mjs 包结构自检
 PREREGISTRATION.md 验收判定边界（数据接触前冻结）
 AUDIT_LOG.md      改进轮审计记录
 DISTILLATION.md   单文件知识总入口
