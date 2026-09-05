@@ -79,9 +79,10 @@ std::vector<EnvVar> sanitizedEnv() {
     }
 #else
     for (char** e = environ; e && *e; e++) {
-        const char* eq = std::strchr(*e, '=');
+        const char* begin = *e;
+        const char* eq = std::strchr(begin, '=');
         if (!eq) continue;
-        std::string name(*e, eq);
+        std::string name(begin, eq);
         if (envKeyStripped(name)) continue;
         vars.push_back({name, std::string(eq + 1)});
     }

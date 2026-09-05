@@ -10,6 +10,19 @@ export function mockExec(over = {}) {
   }
 }
 
+// Poll an async condition until truthy. The guardrail audit log appends are
+// fire-and-forget promises (the plugin must never block the tool loop), so
+// tests wait on observable file state instead of fixed setImmediate ticks.
+export async function waitFor(predicate, { timeoutMs = 5000, intervalMs = 5 } = {}) {
+  const deadline = Date.now() + timeoutMs
+  for (;;) {
+    const value = await predicate()
+    if (value) return value
+    if (Date.now() >= deadline) return value
+    await new Promise((resolve) => setTimeout(resolve, intervalMs))
+  }
+}
+
 export function makeCtx() {
   const registeredTools = []
   const listeners = new Map()

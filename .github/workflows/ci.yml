@@ -33,20 +33,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            mk: make
+          - os: windows-latest
+            mk: mingw32-make
     steps:
       - uses: actions/checkout@v4
       - name: Install MinGW
         if: runner.os == 'Windows'
         run: choco install -y mingw
       - name: Build + golden-table tests
-        shell: bash
-        run: |
-          if [ "$RUNNER_OS" = "Windows" ]; then
-            mingw32-make -C cpp test
-          else
-            make -C cpp test
-          fi
+        run: ${{ matrix.mk }} -C cpp test
 
   diff:
     name: Differential (C++ vs Node) on ${{ matrix.os }}
@@ -54,7 +52,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            mk: make
+          - os: windows-latest
+            mk: mingw32-make
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -66,13 +68,7 @@ jobs:
         if: runner.os == 'Windows'
         run: choco install -y mingw
       - name: Build C++ binary
-        shell: bash
-        run: |
-          if [ "$RUNNER_OS" = "Windows" ]; then
-            mingw32-make -C cpp
-          else
-            make -C cpp
-          fi
+        run: ${{ matrix.mk }} -C cpp
       - name: Golden table is up to date with the Node reference
         run: |
           node tests/cpp/gen_golden.mjs
